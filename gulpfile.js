@@ -10,6 +10,7 @@ var include = require('gulp-include');
 var sass = require('gulp-sass');
 var watch = require('gulp-watch');
 var sourcemaps = require('gulp-sourcemaps');
+var concat = require('gulp-concat');
 
 /*
 gulp.task( task 이름,  함수/익명함수);
@@ -32,7 +33,7 @@ gulp.task('hello2',function(){
 //gulp.task('default', ['hello','hello1','hello2']);
 
 
-
+//
 //새로 고침----f5 키를 누르지 않고 작업하려고 할 때---2가지 방법
 // 1번째
 //gulp.task('livereload', function(){
@@ -43,19 +44,13 @@ gulp.task('hello2',function(){
 //
 //});
 
-//2번째 방법
+//2번째 새로 고침 방법
 gulp.task('livereload', function(){
   gulp.src(['html/*', 'css/*', 'js/*','*'])
       .pipe( livereload());   // pipe() 함수는 모듈의 기능을 실행해 주는 함수이다.
 });
 
-gulp.task('watch',function(){
-  livereload.listen();
-  gulp.watch('*', ['livereload']);
-  gulp.watch('html_src/**', ['include', 'livereload']);
-  gulp.watch('css_src/**', ['sass', 'livereload']);
 
-});
 
 // header, footer 공통 영역 분리하는 방법
 //include 는 html 에서 쓰이는 언어
@@ -72,12 +67,34 @@ gulp.task('sass', function(){
       .pipe(sourcemaps.init())
       .pipe(sass({outputStyle: 'expanded'}).on('error', sass.logError))
       .pipe(sourcemaps.write())
-      .pipe(gulp.dest('css/'));  // dest 는 보여지는 곳
+      .pipe(gulp.dest('css/'));  // dest 는 목적지  =>css파일 아래로 가라
+
+});
+
+gulp.task('watch',function(){
+  livereload.listen();
+  gulp.watch('*', ['livereload']);
+  gulp.watch('html_src/**', ['include', 'livereload']);
+  gulp.watch('css_src/**', ['sass', 'livereload']);
+  gulp.watch('js_src/**', ['tabmenu', 'livereload']);
 
 });
 
 
-gulp.task('default', ['livereload','include','sass','watch']);
+
+
+
+//concat 실행 - 여러 개의 파일을 하나의 파일로 합치는 기능
+
+gulp.task('tabmenu', function() {
+  return gulp.src('js_src/tab_menu/*.js')
+      .pipe(sourcemaps.init())
+      .pipe(concat('tab_menu.js'))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest('js/'));
+});
+
+gulp.task('default', ['livereload','include','sass', 'tabmenu','watch']);
 
 
 
